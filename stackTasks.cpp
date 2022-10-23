@@ -20,43 +20,41 @@ int task1(int number)
 
 bool task2(const string& list)
 {
-    stack<char> small; // ()
-    stack<char> medium; // []
-    stack<char> large; // {}
+    stack<char> brackets;
 
     char current;
     for (size_t i = 0; i < list.length(); i++) {
         current = list[i];
         switch (current) {
         case '(': {
-            small.push(current);
+            brackets.push(current);
             break;
         }
         case ')': {
-            if (!small.empty()) {
-                small.pop();
+            if (!brackets.empty() && brackets.top() == '(') {
+                brackets.pop();
                 break;
             }
             return false;
         }
         case '[': {
-            medium.push(current);
+            brackets.push(current);
             break;
         }
         case ']': {
-            if (!medium.empty()) {
-                medium.pop();
+            if (!brackets.empty() && brackets.top() == '[') {
+                brackets.pop();
                 break;
             }
             return false;
         }
         case '{': {
-            large.push(current);
+            brackets.push(current);
             break;
         }
         case '}': {
-            if (!large.empty()) {
-                large.pop();
+            if (!brackets.empty() && brackets.top() == '{') {
+                brackets.pop();
                 break;
             }
             return false;
@@ -64,7 +62,7 @@ bool task2(const string& list)
         }
     }
 
-    return small.empty() && medium.empty() && large.empty();
+    return brackets.empty();
 }
 
 bool task3(const vector<vector<int>>& g, unsigned from, unsigned to) {
