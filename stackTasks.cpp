@@ -95,8 +95,36 @@ string task4 (const string& input) {
     return "";
 }
 
-bool task5(vector<vector<int>>g, unsigned from, unsigned to) {
-	return false;
+bool task5(vector<vector<int>> g, unsigned from, unsigned to)
+{
+    if (from == to)
+    {
+        return true;
+    }
+    std::vector<bool> visited(g.size(), 0);
+    std::stack<int> stack;
+
+    visited[from] = true;
+    stack.push(from);
+    while ((!stack.empty()))
+    {
+        int current = stack.top();
+        stack.pop();
+        visited[current] = true;
+        for (size_t i = 0; i < g[current].size(); i++)
+        {
+            if (current == to)
+            {
+                return true;
+            }
+            if (!visited[g[current][i]])
+            {
+                stack.push(g[current][i]);
+            }
+        }
+    }
+
+    return false;
 }
 
 bool task6(const string& a, const string& b) {
