@@ -65,8 +65,30 @@ bool task2(const string& list)
     return brackets.empty();
 }
 
-bool task3(const vector<vector<int>>& g, unsigned from, unsigned to) {
-	return false;
+void dfsHelper(const vector<vector<int>> &g, unsigned current, unsigned target, std::vector<bool> &visited)
+{
+    visited[current] = true;
+    for (size_t i = 0; i < g[current].size(); i++)
+    {
+        if (!visited[g[current][i]])
+        {
+            dfsHelper(g, g[current][i], target, visited);
+        }
+    }
+}
+
+bool task3(const vector<vector<int>> &g, unsigned from, unsigned to)
+{
+    if (from == to)
+    {
+        return true;
+    }
+    std::vector<bool> visited(g.size(), 0);
+
+    visited[from] = true;
+    dfsHelper(g, from, to, visited);
+
+    return visited[to];
 }
 
 string task4 (const string& input) {
