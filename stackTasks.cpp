@@ -91,8 +91,75 @@ bool task3(const vector<vector<int>> &g, unsigned from, unsigned to)
     return visited[to];
 }
 
-string task4 (const string& input) {
-    return "";
+bool isLetter(char ch)
+{
+    return ch >= 'A' && ch <= 'Z';
+}
+
+bool isDigit(char ch)
+{
+    return ch >= '0' && ch <= '9';
+}
+
+bool isOpeningBracket(char ch)
+{
+    return ch == '(';
+}
+bool isClosingBracket(char ch)
+{
+    return ch == ')';
+}
+
+string task4(const string &input)
+{
+    std::stack<int> counts;
+    std::string result = "";
+    std::string tempResult = "";
+
+    for (size_t i = 0; i < input.size(); i++)
+    {
+        if (isLetter(input[i]))
+        {
+            tempResult += input[i];
+            if (isClosingBracket(input[i + 1]))
+            {
+                for (size_t i = 0; i < counts.top(); i++)
+                {
+                    result.append(tempResult);
+                }
+                counts.pop();
+                tempResult.clear();
+            }
+        }
+        if (isOpeningBracket(input[i]))
+        {
+            std::stack<char> digitStack;
+            for (std::size_t j = 1; j <= i && isDigit(input[i - j]); ++j)
+            {
+                digitStack.push(input[i - j]);
+            }
+
+            std::string digitString;
+            while (!digitStack.empty())
+            {
+                digitString.push_back(digitStack.top());
+                digitStack.pop();
+            }
+
+            int digit = std::stoi(digitString);
+            counts.push(digit);
+        }
+    }
+    while (!counts.empty())
+    {
+        for (size_t i = 0; i < counts.top() - 1; i++)
+        {
+            result.append(result);
+        }
+        counts.pop();
+    }
+
+    return result;
 }
 
 bool task5(vector<vector<int>> g, unsigned from, unsigned to)
