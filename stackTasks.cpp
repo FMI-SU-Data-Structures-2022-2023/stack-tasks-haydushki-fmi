@@ -194,6 +194,138 @@ bool task5(vector<vector<int>> g, unsigned from, unsigned to)
     return false;
 }
 
+bool isPositiveSign(char ch)
+{
+    return ch == '+';
+}
+
+bool isNegativeSign(char ch)
+{
+    return ch == '-';
+}
+
+bool isSign(char ch)
+{
+    return isPositiveSign(ch) || isNegativeSign(ch);
+}
+
+bool isSmallLetter(char ch)
+{
+    return ch >= 'a' && ch <= 'z';
+}
+
+char flipSign(char ch)
+{
+    if(isPositiveSign(ch))
+        {
+            return '-';
+        }
+    return '+';
+}
+
+std::string simplifyExpression(const std::string& expression)
+{
+    int values[26];
+    char letters[26];
+    for(std::size_t i = 0; i < 26; ++i)
+        {
+            values[i] = 0;
+        }
+    std::size_t valueIndex = 0;
+    std::stack<char> operations;
+
+    operations.push('+');
+    for(int i = 0; i < expression.size(); ++i)
+        {
+            // Change global sign
+            if(isOpeningBracket(expression[i]))
+                {
+                    if(isNegativeSign(operations.top()))
+                        {
+                            operations.push(flipSign(expression[i - 1]));
+                        }
+                    else
+                        {
+                            operations.push(expression[i - 1]);
+                        }
+                }
+            // Restore to previous global sign
+            if(isClosingBracket(expression[i]))
+                {
+                    operations.pop();
+                }
+            // If it's a letter calculate it's sign and put it into
+            if(isSmallLetter(expression[i]))
+                {
+                    if(i == 0)
+                        {
+                            values[valueIndex] += 1;
+                            letters[valueIndex] = expression[i];
+                            valueIndex++;
+                            continue;
+                        }
+                    if(!isSign(expression[i - 1])) // If there's no sign before the letter, assume it's the last global
+                                                   // sign.
+                        {
+                            if(isPositiveSign(operations.top()))
+                                {
+                                    values[valueIndex] += 1;
+                                    letters[valueIndex] = expression[i];
+                                }
+                            else
+                                {
+                                    values[valueIndex] -= 1;
+                                    letters[valueIndex] = expression[i];
+                                }
+                        }
+                    else
+                        {
+                            char newSign = expression[i - 1];
+                            if(isNegativeSign(operations.top()))
+                                {
+                                    newSign = flipSign(newSign);
+                                }
+
+			    if(isPositiveSign(newSign))
+				{
+				    values[valueIndex] += 1;
+				    letters[valueIndex] = expression[i];
+				}
+			    else
+				{
+				    values[valueIndex] -= 1;
+				    letters[valueIndex] = expression[i];
+				}
+			}
+
+		    valueIndex++;
+		}
+	}
+
+    // Generate result
+    std::string result;
+    for(int i = 0; i < 26; ++i)
+        {
+
+	    if(values[i] != 0)
+		{
+		    if(values[i] > 0)
+			{
+			    result.push_back('+');
+			}
+		    else
+			{
+			    result.push_back('-');
+			}
+		    result.push_back(letters[i]);
+		}
+	}
+    return result;
+}
+
 bool task6(const string& a, const string& b) {
-	return false;
+    std::string aSimplified = simplifyExpression(a);
+    std::string bSimplified = simplifyExpression(b);
+
+	return aSimplified == bSimplified;
 }
