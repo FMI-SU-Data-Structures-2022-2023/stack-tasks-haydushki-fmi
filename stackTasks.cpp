@@ -9,7 +9,8 @@ int task1(int number)
     stack<int> factorials;
     factorials.push(1);
 
-    for (int i = 2; i <= number; ++i) {
+    for (int i = 2; i <= number; ++i)
+    {
         int nextNumber = factorials.top() * i;
         factorials.pop();
         factorials.push(nextNumber);
@@ -18,42 +19,53 @@ int task1(int number)
     return factorials.top();
 }
 
-bool task2(const string& list)
+bool task2(const string &list)
 {
     stack<char> brackets;
 
     char current;
-    for (size_t i = 0; i < list.length(); i++) {
+    for (size_t i = 0; i < list.length(); i++)
+    {
         current = list[i];
-        switch (current) {
-        case '(': {
+        switch (current)
+        {
+        case '(':
+        {
             brackets.push(current);
             break;
         }
-        case ')': {
-            if (!brackets.empty() && brackets.top() == '(') {
+        case ')':
+        {
+            if (!brackets.empty() && brackets.top() == '(')
+            {
                 brackets.pop();
                 break;
             }
             return false;
         }
-        case '[': {
+        case '[':
+        {
             brackets.push(current);
             break;
         }
-        case ']': {
-            if (!brackets.empty() && brackets.top() == '[') {
+        case ']':
+        {
+            if (!brackets.empty() && brackets.top() == '[')
+            {
                 brackets.pop();
                 break;
             }
             return false;
         }
-        case '{': {
+        case '{':
+        {
             brackets.push(current);
             break;
         }
-        case '}': {
-            if (!brackets.empty() && brackets.top() == '{') {
+        case '}':
+        {
+            if (!brackets.empty() && brackets.top() == '{')
+            {
                 brackets.pop();
                 break;
             }
@@ -216,116 +228,117 @@ bool isSmallLetter(char ch)
 
 char flipSign(char ch)
 {
-    if(isPositiveSign(ch))
-        {
-            return '-';
-        }
+    if (isPositiveSign(ch))
+    {
+        return '-';
+    }
     return '+';
 }
 
-std::string simplifyExpression(const std::string& expression)
+std::string simplifyExpression(const std::string &expression)
 {
     int values[26];
     char letters[26];
-    for(std::size_t i = 0; i < 26; ++i)
-        {
-            values[i] = 0;
-        }
+    for (std::size_t i = 0; i < 26; ++i)
+    {
+        values[i] = 0;
+    }
     std::size_t valueIndex = 0;
     std::stack<char> operations;
 
     operations.push('+');
-    for(int i = 0; i < expression.size(); ++i)
+    for (int i = 0; i < expression.size(); ++i)
+    {
+        // Change global sign
+        if (isOpeningBracket(expression[i]))
         {
-            // Change global sign
-            if(isOpeningBracket(expression[i]))
+            if (isNegativeSign(operations.top()))
+            {
+                operations.push(flipSign(expression[i - 1]));
+            }
+            else
+            {
+                operations.push(expression[i - 1]);
+            }
+        }
+        // Restore to previous global sign
+        if (isClosingBracket(expression[i]))
+        {
+            operations.pop();
+        }
+        // If it's a letter calculate it's sign and put it into
+        if (isSmallLetter(expression[i]))
+        {
+            if (i == 0)
+            {
+                values[valueIndex] += 1;
+                letters[valueIndex] = expression[i];
+                valueIndex++;
+                continue;
+            }
+            if (!isSign(expression[i - 1])) // If there's no sign before the letter, assume it's the last global
+                                            // sign.
+            {
+                if (isPositiveSign(operations.top()))
                 {
-                    if(isNegativeSign(operations.top()))
-                        {
-                            operations.push(flipSign(expression[i - 1]));
-                        }
-                    else
-                        {
-                            operations.push(expression[i - 1]);
-                        }
+                    values[valueIndex] += 1;
+                    letters[valueIndex] = expression[i];
                 }
-            // Restore to previous global sign
-            if(isClosingBracket(expression[i]))
+                else
                 {
-                    operations.pop();
+                    values[valueIndex] -= 1;
+                    letters[valueIndex] = expression[i];
                 }
-            // If it's a letter calculate it's sign and put it into
-            if(isSmallLetter(expression[i]))
+            }
+            else
+            {
+                char newSign = expression[i - 1];
+                if (isNegativeSign(operations.top()))
                 {
-                    if(i == 0)
-                        {
-                            values[valueIndex] += 1;
-                            letters[valueIndex] = expression[i];
-                            valueIndex++;
-                            continue;
-                        }
-                    if(!isSign(expression[i - 1])) // If there's no sign before the letter, assume it's the last global
-                                                   // sign.
-                        {
-                            if(isPositiveSign(operations.top()))
-                                {
-                                    values[valueIndex] += 1;
-                                    letters[valueIndex] = expression[i];
-                                }
-                            else
-                                {
-                                    values[valueIndex] -= 1;
-                                    letters[valueIndex] = expression[i];
-                                }
-                        }
-                    else
-                        {
-                            char newSign = expression[i - 1];
-                            if(isNegativeSign(operations.top()))
-                                {
-                                    newSign = flipSign(newSign);
-                                }
+                    newSign = flipSign(newSign);
+                }
 
-			    if(isPositiveSign(newSign))
-				{
-				    values[valueIndex] += 1;
-				    letters[valueIndex] = expression[i];
-				}
-			    else
-				{
-				    values[valueIndex] -= 1;
-				    letters[valueIndex] = expression[i];
-				}
-			}
+                if (isPositiveSign(newSign))
+                {
+                    values[valueIndex] += 1;
+                    letters[valueIndex] = expression[i];
+                }
+                else
+                {
+                    values[valueIndex] -= 1;
+                    letters[valueIndex] = expression[i];
+                }
+            }
 
-		    valueIndex++;
-		}
-	}
+            valueIndex++;
+        }
+    }
 
     // Generate result
     std::string result;
-    for(int i = 0; i < 26; ++i)
-        {
+    for (int i = 0; i < 26; ++i)
+    {
 
-	    if(values[i] != 0)
-		{
-		    if(values[i] > 0)
-			{
-			    result.push_back('+');
-			}
-		    else
-			{
-			    result.push_back('-');
-			}
-		    result.push_back(letters[i]);
-		}
-	}
+        if (values[i] != 0)
+        {
+            if (values[i] > 0)
+            {
+                result.push_back('+');
+            }
+            else
+            {
+                result.push_back('-');
+            }
+            result.push_back(letters[i]);
+        }
+    }
     return result;
 }
 
-bool task6(const string& a, const string& b) {
+bool task6(const string &a, const string &b)
+{
     std::string aSimplified = simplifyExpression(a);
     std::string bSimplified = simplifyExpression(b);
 
-	return aSimplified == bSimplified;
+    return aSimplified == bSimplified;
 }
