@@ -316,7 +316,7 @@ std::string simplifyExpression(const std::string &expression)
 
     // Generate result
     std::string result;
-    for (int i = 0; i < 26; ++i)
+    for (int i = 0; i < valueIndex; ++i)
     {
 
         if (values[i] != 0)
